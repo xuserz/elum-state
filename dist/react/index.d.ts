@@ -3,12 +3,13 @@ import react from 'react';
 interface Atom<T> {
     readonly key: string;
     readonly default?: T;
+    readonly request?: (getter: () => T, setter: (v: SetStateAction<T>) => void) => void;
 }
 interface GlobalAtom<T> {
     readonly k: string;
     readonly d: T;
     readonly g: () => T;
-    readonly s: (v: T) => void;
+    readonly s: (v: SetStateAction<T>) => void;
     readonly sb: (handle: react.Dispatch<T>) => void;
 }
 type SetStateAction<S> = S | ((prevState: S) => S | undefined) | undefined;
