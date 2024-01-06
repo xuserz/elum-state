@@ -8,6 +8,7 @@ type EventhMap<Events extends Record<EventType, unknown>> = Map<keyof Events, Ev
 interface Atom<T> {
   readonly key: string;
   readonly default?: T;
+  readonly request?: (value: T) => void;
 };
 
 interface GlobalAtom<T> {
@@ -45,11 +46,11 @@ const events = <Events extends Record<EventType, unknown>>(
     e: events<Record<string, any>>()
   },
   atom = <T>(opt: Atom<T>): GlobalAtom<T> => {
-    const { key } = opt;
+    const { key, request } = opt;
     return {
       k: key,
       d: opt.default as T,
-      g: () => context.m.get(key) ?? opt.default,
+      g: () => { request && request(opt.default as T); return context.m.get(key) ?? opt.default; },
       s: (value) => { context.m.set(key, value); context.e.emit(key, value); },
       sb: (value) => {
         context.e.on(key, value);
