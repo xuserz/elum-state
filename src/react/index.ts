@@ -46,15 +46,14 @@ const events = <Events extends Record<EventType, unknown>>(
     l: new Map<string, boolean>(),
     e: events<Record<string, any>>()
   },
-
   atom = <T>(opt: Atom<T>): GlobalAtom<T> => {
-    const { key, request } = opt;
+    const { key } = opt;
     const s = (v: SetStateAction<T>) => {
       const value = typeof v === "function" ? (v as Function)(g()) : v;
       context.m.set(key, value); context.l.set(key, true); context.e.emit(key, value);
     }
     const g = () => {
-      if (request && context.l.get(key) !== false) { context.l.set(key, false); request(g, s); }
+      if (opt.request && context.l.get(key) !== false) { context.l.set(key, false); opt.request(g, s); }
       return context.m.get(key) ?? opt.default
     }
     return {
